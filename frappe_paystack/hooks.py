@@ -173,5 +173,5 @@ user_data_fields = [
 # 	"frappe_paystack.auth.validate"
 # ]
 
-required_apps = ["frappe", "erpnext", "payments", "ecommerce_integrations"]
+required_apps = ["frappe", "erpnext", "ecommerce_integrations"]
 
