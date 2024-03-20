@@ -34,9 +34,10 @@ class PaystackSettings(Document):
 
 
 	def validate(self):
-		pass
-		# create_payment_gateway(self.gateway_name)
-		# call_hook_method('payment_gateway_enabled', gateway=self.gateway_name)
+		if self.test_mode:self.status='Test'
+		else:self.status='Live'
+		self.live_callback_url = f"{frappe.utils.get_url()}/api/method/frappe_paystack.www.paystack.pay.index.webhook"
+
 
 	def validate_transaction_currency(self, currency):
 		if currency not in self.supported_currencies:
