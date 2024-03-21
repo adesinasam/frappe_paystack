@@ -91,11 +91,11 @@ web_include_js = [
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-	"Payment Request": {
-		"before_insert": "frappe_paystack.events.payment_request.before_insert"
-	}
-}
+# doc_events = {
+# 	"Payment Request": {
+# 		"before_insert": "frappe_paystack.events.payment_request.before_insert"
+# 	}
+# }
 
 # Scheduled Tasks
 # ---------------
