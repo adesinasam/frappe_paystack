@@ -8,6 +8,15 @@ app_license = "mit"
 
 # Includes in <head>
 # ------------------
+fixtures = [{
+  'dt' : 'Custom Field', 'filters':[
+    [
+      'name', 'in', [
+        'Payment Request-custom_redirect'
+      ]
+    ]
+  ]
+}]
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/frappe_paystack/css/frappe_paystack.css"

@@ -38,11 +38,26 @@ createApp({
                     }
                 });
                 $('#paymentBTN').hide();
-                Swal.fire(
-                    'Successful',
-                    'Your payment was successful, we will issue you receipt shortly.',
-                    'success'
-                )
+                // Swal.fire(
+                //     'Successful',
+                //     'Your payment was successful, we will issue you receipt shortly.',
+                //     'success'
+                // )
+                Swal.fire({
+                    title: 'Successful',
+                    text: 'Your payment was successful, we will issue you receipt shortly.',
+                    icon: 'success',
+                    timer: 3000, // Auto-close after 5 seconds
+                    didClose: () => {
+                        // Check if a custom redirect URL is provided
+                        if (me.payment_data.custom_redirect) {
+                            window.location.href = me.payment_data.custom_redirect;
+                        // } else {
+                            // Default fallback redirect (e.g., invoice or home page)
+                        //     window.location.href = `/app/`;
+                        }
+                    }
+                })
             }
         });
 
