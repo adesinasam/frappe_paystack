@@ -25,6 +25,7 @@ class PaystackLog(Document):
 			metadata = frappe._dict(data.metadata)
 			frappe.db.set_value(self.doctype, self.name, "amount", data.amount/100)
 			frappe.db.set_value(self.doctype, self.name, "payment_request", metadata.payment_request)
+			self.db_set("status", data.status)
 			
 			if frappe.db.exists("Payment Request", {"name":metadata.payment_request}):
 				payment_request = frappe.get_doc("Payment Request", metadata.payment_request, ignore_permissions=1)
@@ -37,7 +38,8 @@ class PaystackLog(Document):
 				)
 				if (ref_doc.docstatus==1 and payment_request.status=="Requested" and 
 					data.status=="success" and payment_request.grand_total==data.amount/100):
-					payment_request.run_method("on_payment_authorized", 'Completed')
+					# payment_request.run_method("on_payment_authorized", 'Completed')
+					payment_request.set_as_paid()
 					
 	
 	def validate(self):
