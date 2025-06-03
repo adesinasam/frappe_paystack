@@ -25,8 +25,7 @@ class PaystackLog(Document):
 			metadata = frappe._dict(data.metadata)
 			frappe.db.set_value(self.doctype, self.name, "amount", data.amount/100)
 			frappe.db.set_value(self.doctype, self.name, "payment_request", metadata.payment_request)
-			self.db_set("status", data.status)
-			
+
 			if frappe.db.exists("Payment Request", {"name":metadata.payment_request}):
 				payment_request = frappe.get_doc("Payment Request", metadata.payment_request, ignore_permissions=1)
 				# check if reference document is not cancelled or deleted
