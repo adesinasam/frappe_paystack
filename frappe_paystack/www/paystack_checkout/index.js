@@ -26,6 +26,10 @@ createApp({
             // label: "Optional string that replaces customer email"
             onClose: function(){
                 alert('Payment Terminated.');
+                // Check if a custom redirect URL is provided
+                if (me.payment_data.custom_redirect) {
+                    window.location.href = me.payment_data.custom_redirect;
+                }
             },
             callback: function(response){
                 console.log(response)
@@ -47,7 +51,7 @@ createApp({
                     title: 'Successful',
                     text: 'Your payment was successful, we will issue you receipt shortly.',
                     icon: 'success',
-                    timer: 3000, // Auto-close after 5 seconds
+                    timer: 3000, // Auto-close after 3 seconds
                     didClose: () => {
                         // Check if a custom redirect URL is provided
                         if (me.payment_data.custom_redirect) {

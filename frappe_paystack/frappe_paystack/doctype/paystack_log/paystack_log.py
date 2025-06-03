@@ -37,9 +37,10 @@ class PaystackLog(Document):
 					as_dict=1
 				)
 				if (ref_doc.docstatus==1 and payment_request.status=="Requested" and 
-					data.status=="success" and payment_request.grand_total==data.amount/100):
-					# payment_request.run_method("on_payment_authorized", 'Completed')
-					payment_request.set_as_paid()
+					data.status=="success"):
+					#  and payment_request.grand_total==data.amount/100
+					payment_request.run_method("on_payment_authorized", 'Completed')
+					# payment_request.set_as_paid()
 					
 	
 	def validate(self):
