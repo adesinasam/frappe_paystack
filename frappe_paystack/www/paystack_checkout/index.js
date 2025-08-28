@@ -32,36 +32,111 @@ createApp({
                 }
             },
             callback: function(response){
-                console.log(response)
+                // console.log(response)
                 frappe.call({
                     type: "POST",
                     method: "frappe_paystack.www.paystack_checkout.index.verify_transaction",
                     args:response,
                     callback: function(r) {
-                        
+                        $('#paymentBTN').hide();
+                        // Check if this is a valid payment entry in ERPNext
+                        frappe.call({
+                            type: "GET",
+                            method: "frappe.client.get",
+                            args: {
+                                doctype: "Payment Entry",
+                                filters: {
+                                    reference_no: me.payment_data.name
+                                }
+                            },
+                            callback: function(paymentResult) {
+                                if (paymentResult.message) {
+                                    // Valid payment entry found
+                                    Swal.fire({
+                                        title: 'Payment Successful',
+                                        text: 'Your payment was processed successfully.',
+                                        icon: 'success',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'View Payment',
+                                        cancelButtonText: 'Continue',
+                                        timer: 10000,
+                                        timerProgressBar: true,
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            // Redirect to payment entry
+                                            window.location.href = `printview?doctype=Payment%20Entry&name=${paymentResult.message.name}`;
+                                        } else {
+                                            if (me.payment_data.custom_redirect) {
+                                                window.location.href = me.payment_data.custom_redirect;
+                                            } else {
+                                                window.location.href = '/dashboard';
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    // Payment entry not found yet, but payment was successful
+                                    Swal.fire({
+                                        title: 'Processing Payment',
+                                        text: 'Your payment was successful but is still being processed. You will receive a confirmation shortly.',
+                                        icon: 'info',
+                                        confirmButtonText: 'OK',
+                                    }).then(() => {
+                                        if (me.payment_data.custom_redirect) {
+                                            window.location.href = me.payment_data.custom_redirect;
+                                        } else {
+                                            window.location.href = '/dashboard';
+                                        }
+                                    });
+                                }
+                            }
+                        });
                     }
                 });
                 $('#paymentBTN').hide();
-                // Swal.fire(
-                //     'Successful',
-                //     'Your payment was successful, we will issue you receipt shortly.',
-                //     'success'
-                // )
-                Swal.fire({
-                    title: 'Successful',
-                    text: 'Your payment was successful, we will issue you receipt shortly.',
-                    icon: 'success',
-                    timer: 3000, // Auto-close after 3 seconds
-                    didClose: () => {
-                        // Check if a custom redirect URL is provided
-                        if (me.payment_data.custom_redirect) {
-                            window.location.href = me.payment_data.custom_redirect;
-                        // } else {
-                            // Default fallback redirect (e.g., invoice or home page)
-                        //     window.location.href = `/app/`;
-                        }
-                    }
-                })
+                // Swal.fire({
+                //     title: 'Successful',
+                //     text: 'Your payment was successful, we will issue you receipt shortly.',
+                //     icon: 'success',
+                //     timer: 5000, // Auto-close after 3 seconds
+                //     didClose: () => {
+                //         // Check if a custom redirect URL is provided
+                //         if (me.payment_data.custom_redirect) {
+                //             window.location.href = me.payment_data.custom_redirect;
+                //         // } else {
+                //             // Default fallback redirect (e.g., invoice or home page)
+                //         //     window.location.href = `/app/`;
+                //         }
+                //     }
+                // })
+
+
+                // Show success message with View Payment button
+                // Swal.fire({
+                //     title: 'Successful',
+                //     text: 'Your payment was successful, we will issue you receipt shortly.',
+                //     icon: 'success',
+                //     showCancelButton: true,
+                //     confirmButtonText: 'View Payment',
+                //     cancelButtonText: 'Continue',
+                //     timer: 10000, // Increased timer to allow user interaction
+                //     timerProgressBar: true,
+                //     didClose: () => {
+                //         if (me.payment_data.custom_redirect) {
+                //             window.location.href = me.payment_data.custom_redirect;
+                //         }
+                //     }
+                // }).then((result) => {
+                //     if (result.isConfirmed) {
+                //         // Redirect to payment details page
+                //         window.location.href = `/app/payment-entry/${me.payment_response.reference}`;
+                //     } else if (result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.timer) {
+                //         // Redirect to custom URL or fallback
+                //         if (me.payment_data.custom_redirect) {
+                //             window.location.href = me.payment_data.custom_redirect;
+                //         }
+                //     }
+                // })
+
             }
         });
 
@@ -81,7 +156,7 @@ createApp({
                     'warning'
                 )
                 me.payment_data = {}
-                return
+                return window.location.href = `/me`;
             } else {
                 let me =  this;
                 frappe.call({
@@ -93,7 +168,7 @@ createApp({
                     },
                     callback: function(r) {
                         // code snippet
-                        console.log(r)
+                        // console.log(r)
                         if(r.message.error){
                             Swal.fire(
                                 'Error',
@@ -102,6 +177,7 @@ createApp({
                             )
                             me.payment_data = {}
                             me.showDiv = false;
+                            return window.location.href = `/dashboard`;
                         } else {
                             me.payment_data = r.message;
                             me.payWithPaystack();
